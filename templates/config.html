@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block contain %}
+    <div class="contain">
+
+        <div class="row">
+            <form class="form-horizontal" action="config" method="post">
+                <fieldset>
+
+                    <!-- Form Name -->
+                    <legend>节点配置</legend>
+
+                    <!-- Select Basic -->
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="control">控制节点</label>
+
+                        <div class="col-md-4">
+                            <select id="control" name="control" class="form-control">
+                                {% for host in hosts %}
+                                <option value="{{ host.id }}">{{ host.hostname }}-->{{ host.ip }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Select Basic -->
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="compute">计算节点</label>
+
+                        <div class="col-md-4">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>主机名</th>
+                                    <th>IP</th>
+                                    <td><input type="checkbox" name="compute-all" id="compute-all"></td>
+                                </tr>
+                               {% for host in hosts %}
+                                <tr>
+                                    <td>{{ host.hostname }}</td>
+                                    <td>{{ host.ip }}</td>
+                                    <td><input type="checkbox" name="compute" id="compute-{{ host.id }}" value="{{ host.id }}" checked="checked"></td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+
+                </fieldset>
+
+                <fieldset>
+
+                    <legend>网络设置</legend>
+
+                    <!-- Multiple Radios -->
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="net-model">网络模型</label>
+
+                        <div class="col-md-4">
+                            <div class="radio">
+                                <label for="radios-0">
+                                    <input type="radio" name="net-model"  value="VLAN"
+                                           {% if deploy.net_model == 'VLAN' %}
+                                           checked="checked"
+                                           {% endif %}
+                                            >
+                                    VLAN
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label for="radios-1">
+                                    <input type="radio" name="net-model"
+                                           value="GRE"
+                                           {% if deploy.net_model == 'GRE' %}
+                                           checked="checked"
+                                           {% endif %}
+                                            >
+                                    GRE
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="radios">管理网络</label>
+
+                        <div class="col-md-4">
+                            <label class="radio-inline" for="manage-net">
+                                <input type="radio" name="net-manage" id="manage-net-0" value="eth0"
+                                       {% if deploy.net_manage == "eth0" %}
+                                       checked="checked"
+                                       {% endif %}
+                                        >
+                                eth0
+                            </label>
+                            <label class="radio-inline" for="radios-1">
+                                <input type="radio" name="net-manage" id="manage-net-1" value="eth1"
+                                       {% if deploy.net_manage == "eth1" %}
+                                       checked="checked"
+                                       {% endif %}
+                                        >
+                                eth1
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="net-compute">计算网络</label>
+
+                        <div class="col-md-4">
+                            <label class="radio-inline" for="net-compute">
+                                <input type="radio" name="net-compute" id="compute-net-0" value="eth0"
+                                       {% if deploy.net_compute == "eth1" %}
+                                       checked="checked"
+                                       {% endif %}
+                                        >
+                                eth0
+                            </label>
+                            <label class="radio-inline" for="radios-1">
+                                <input type="radio" name="net-compute" id="compute-net-1" value="eth1"
+                                       {% if deploy.net_compute == "eth1" %}
+                                       checked="checked"
+                                       {% endif %}>
+                                eth1
+                            </label>
+                        </div>
+                    </div>
+
+                 <div class="form-group">
+                        <label class="col-md-4 control-label" for="net-ex">外部网络</label>
+
+                        <div class="col-md-4">
+                            <label class="radio-inline" for="net-ex">
+                                <input type="radio" name="net-ex" id="compute-net-0" value="eth0" checked="checked">
+                                eth0
+                            </label>
+                            <label class="radio-inline" for="radios-1">
+                                <input type="radio" name="net-ex" id="compute-net-1" value="eth1">
+                                eth1
+                            </label>
+                        </div>
+                    </div>
+
+
+                </fieldset>
+
+                <fieldset>
+
+                    <legend>存储设置</legend>
+
+                    <!-- Multiple Radios -->
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="store-model">存储后端</label>
+
+                        <div class="col-md-4">
+                            <div class="radio">
+                                <label for="radios-0">
+                                    <input type="radio" name="store-model" id="storage-0" value="LVM" checked="checked">
+                                    LVM
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label for="radios-1">
+                                    <input type="radio" name="store-model" id="storage-1" value="CEPH">
+                                    CEPH
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                </fieldset>
+                <div class="modal-footer">
+                    <a href="/deploy" class="btn btn-default">返回</a>
+                    <button type="submit" class="btn btn-primary" id="submit">提交</button>
+                </div>
+
+            </form>
+        </div>
+
+
+    </div>
+{% endblock %}

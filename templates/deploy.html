@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block contain %}
+    <div class="contain">
+        <div class="row">
+            <div class="col-md-6">
+                <h3>配置部署</h3>
+            </div>
+            <div class="col-md-6 right-div">
+                <a class="pull-right btn btn-default right-button" >开始部署</a>
+                <a class="pull-right btn btn-default right-button">清空</a>
+            </div>
+        </div>
+
+        <hr/>
+        <div class="row">
+            <div id="deploy-detail">
+
+                <legend>节点配置</legend>
+                <div class="row">
+                    <label class="col-md-4">控制节点:</label>
+                    <div class="col-md-4">
+                        <table  class="table table-bordered">
+                            <tr>
+                            <th>名称</th>
+                            <th>进度</th>
+                            <th>操作</th>
+                            </tr>
+                        {% for host in role %}
+                            {% if host.role == 'control' %}
+                            <tr>
+                                <td>{{ host.host.hostname }}</td>
+                                <td>0%</td>
+                                <td>重新部署</td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                        </table>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-md-4">计算节点:</label>
+                    <div class="col-md-4">
+                       <table  class="table table-bordered">
+                            <tr>
+                            <th>名称</th>
+                            <th>进度</th>
+                            <th>操作</th>
+                            </tr>
+                        {% for host in role %}
+                            {% if host.role == 'compute' %}
+                            <tr>
+                                <td>{{ host.host.hostname }}</td>
+                                <td>0%</td>
+                                <td>重新部署</td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                        </table>
+
+                    </div>
+                </div>
+
+                    <legend>网络设置</legend>
+                    <div class="row">
+                        <label class="col-md-4 control-label" for="radios">网络模型</label>
+                        <div class="col-md-4">
+                            <p>{{ deploy.net_model }}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-md-4 control-label">管理网络</label>
+                        <div class="col-md-4">
+                          <p>{{ deploy.net_manage }}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-md-4 control-label">计算网络</label>
+                        <div class="col-md-4">
+                          <p>{{ deploy.net_compute }}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-md-4 control-label">外部网络</label>
+                        <div class="col-md-4">
+                          <p>{{ deploy.net_ex }}</p>
+                        </div>
+                    </div>
+
+
+                    <legend>存储设置</legend>
+                    <!-- Multiple Radios -->
+                    <div class="row">
+                        <label class="col-md-4 control-label" for="radios">存储后端</label>
+                        <div class="col-md-4">
+                            <p>LVM</p>
+                        </div>
+                    </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
