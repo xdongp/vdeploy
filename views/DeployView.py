@@ -32,6 +32,16 @@ def logs():
     role = Role.query.join(Host).all()
     return render_template("hosts.html", hosts=hosts, deploy=deploy, role=role)
 
+@blue_print.route("/clear")
+def clear():
+    hosts = Host.query.all()
+    Deploy.clear()
+    roles = Role.query.all()
+    for role in roles:
+        db.session.delete(role)
+    db.session.commit()
+    return redirect("/deploy")
+
 @blue_print.route("/config", methods=["GET", "POST"])
 def config():
     if request.method == "POST":

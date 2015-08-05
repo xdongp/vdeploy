@@ -73,6 +73,13 @@ class Deploy(db.Model):
         return Deploy.query.filter(Deploy.name=="default").first()
 
     @classmethod
+    def clear(cls):
+        obj = Deploy.query.filter(Deploy.name=="default").first()
+        if obj:
+            db.session.delete(obj)
+            db.session.commit()
+
+    @classmethod
     def update(cls, dct):
         obj = Deploy.get()
         if not obj:
