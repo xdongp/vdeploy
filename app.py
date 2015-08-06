@@ -13,10 +13,10 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 toolbar = DebugToolbarExtension(app)
 
 from models import db
-from models.Deploy import *
+from models.deploy import *
 
 #Blueprint导入
-from views.DeployView import blue_print as deploy_bp
+from views.deploy import blue_print as deploy_bp
 
 admin = admin.Admin(app, name=u'Deploy Admin')
 admin.add_view(sqla.ModelView(Host, db.session, name=u"主机"))
@@ -46,4 +46,4 @@ def page_not_found(e):
         return render_template('404.html'), 404
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5005)
+    app.run(host="0.0.0.0", port=8080)

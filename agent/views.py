@@ -12,7 +12,6 @@ import globals
 
 index = 0
 
-G_BACKEND_STATUS = False
 
 
 def viewIndex(request, header):
@@ -25,6 +24,8 @@ def viewDeployAll(request, header):
     if not globals.BACKEND_STATUS:
         globals.BACKEND_STATUS = True
         #开始部署
+        #makeConfig(env)
+        #backendDeploy()
         return "deploy all env"
     else:
         return "deploy all env exist"

@@ -1,1 +1,2 @@
-__author__ = 'xiaomi'
+#-*- coding:utf-8 -*-
+__author__ = 'xdpan'

@@ -16,7 +16,12 @@ class Host(db.Model):
     interface = db.Column(db.VARCHAR(256)) #json格式
     status = db.Column(db.Boolean, default=False)
 
+
 class Role(db.Model):
+    """
+    机器角色： 目前一台机器只支持一种角色
+    """
+
     ROLE_CHOISE = ('control', 'compute', 'network', 'storage')
 
     id = db.Column(db.Integer, primary_key=True)
