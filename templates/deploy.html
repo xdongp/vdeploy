@@ -7,98 +7,184 @@
                 <h3>配置部署</h3>
             </div>
             <div class="col-md-6 right-div">
-                <a class="pull-right btn btn-default right-button" href="installall">开始部署</a>
+                <a id="startInstall" class="pull-right btn btn-default right-button">开始部署</a>
                 <a class="pull-right btn btn-default right-button" href="clear">清空</a>
+                <a class="pull-right btn btn-default right-button" target="_blank" href="logs">日志</a>
             </div>
         </div>
 
         <hr/>
         <div class="row">
             <div id="deploy-detail">
-
+                <legend>部署进度</legend>
+                {% if deploy and deploy.progress > 0 %}
+                    <div class="progress">
+                        <div id="main-progress" class="progress-bar progress-bar-success" role="progressbar"
+                             aria-valuenow="60"
+                             aria-valuemin="0" aria-valuemax="100" style="width: {{ deploy.progress }}%;">
+                        </div>
+                    </div>
+                {% else %}
+                    尚未开始  <br><br>
+                {% endif %}
                 <legend>节点配置</legend>
                 <div class="row">
                     <label class="col-md-4">控制节点:</label>
-                    <div class="col-md-4">
-                        <table  class="table table-bordered">
+
+                    <div class="col-md-6">
+                        <table class="table table-bordered">
                             <tr>
-                            <th>名称</th>
-                            <th>进度</th>
-                            <th>操作</th>
+                                <th>名称</th>
+                                <th>IP</th>
+                                <th width="30%">进度</th>
+                                <th>操作</th>
                             </tr>
-                        {% for host in role %}
-                            {% if host.role == 'control' %}
-                            <tr>
-                                <td>{{ host.host.hostname }}</td>
-                                <td>0%</td>
-                                <td>重新部署</td>
-                            </tr>
-                            {% endif %}
-                        {% endfor %}
+                            {% for host in role %}
+                                {% if host.role == 'control' %}
+                                    <tr>
+                                        <td>{{ host.host.hostname }}</td>
+                                        <td>{{ host.host.ip }}</td>
+                                        <td>
+                                            <div class="progress">
+                                                <div id="{{ host.host.hostname }}-progress" class="progress-bar progress-bar-success"
+                                                     role="progressbar" aria-valuenow="60"
+                                                     aria-valuemin="0" aria-valuemax="100"
+                                                     style="width:{{ host.host.progress }}%;">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>重新部署</td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
                         </table>
 
                     </div>
                 </div>
                 <div class="row">
                     <label class="col-md-4">计算节点:</label>
-                    <div class="col-md-4">
-                       <table  class="table table-bordered">
+
+                    <div class="col-md-6">
+                        <table class="table table-bordered">
                             <tr>
-                            <th>名称</th>
-                            <th>进度</th>
-                            <th>操作</th>
+                                <th>名称</th>
+                                <th>IP</th>
+                                <th width="30%">进度</th>
+                                <th>操作</th>
                             </tr>
-                        {% for host in role %}
-                            {% if host.role == 'compute' %}
-                            <tr>
-                                <td>{{ host.host.hostname }}</td>
-                                <td>0%</td>
-                                <td>重新部署</td>
-                            </tr>
-                            {% endif %}
-                        {% endfor %}
+                            {% for host in role %}
+                                {% if host.role == 'compute' %}
+                                    <tr>
+                                        <td>{{ host.host.hostname }}</td>
+                                        <td>{{ host.host.ip }}</td>
+                                        <td>
+                                            <div class="progress">
+                                                <div id="{{ host.host.hostname }}-progress" class="progress-bar progress-bar-success"
+                                                     role="progressbar" aria-valuenow="60"
+                                                     aria-valuemin="0" aria-valuemax="100"
+                                                     style="width:{{ host.host.progress }}%;">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>重新部署</td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
                         </table>
 
                     </div>
                 </div>
 
-                    <legend>网络设置</legend>
-                    <div class="row">
-                        <label class="col-md-4 control-label" for="radios">网络模型</label>
-                        <div class="col-md-4">
-                            <p>{{ deploy.net_model }}</p>
-                        </div>
+                <legend>网络设置</legend>
+                <div class="row">
+                    <label class="col-md-4 control-label" for="radios">网络模型</label>
+
+                    <div class="col-md-4">
+                        <p>{{ deploy.net_model }}</p>
                     </div>
-                    <div class="row">
-                        <label class="col-md-4 control-label">管理网络</label>
-                        <div class="col-md-4">
-                          <p>{{ deploy.net_manage }}</p>
-                        </div>
+                </div>
+                <div class="row">
+                    <label class="col-md-4 control-label">管理网络</label>
+
+                    <div class="col-md-4">
+                        <p>{{ deploy.net_manage }}</p>
                     </div>
-                    <div class="row">
-                        <label class="col-md-4 control-label">计算网络</label>
-                        <div class="col-md-4">
-                          <p>{{ deploy.net_compute }}</p>
-                        </div>
+                </div>
+                <div class="row">
+                    <label class="col-md-4 control-label">计算网络</label>
+
+                    <div class="col-md-4">
+                        <p>{{ deploy.net_compute }}</p>
                     </div>
-                    <div class="row">
-                        <label class="col-md-4 control-label">外部网络</label>
-                        <div class="col-md-4">
-                          <p>{{ deploy.net_ex }}</p>
-                        </div>
+                </div>
+                <div class="row">
+                    <label class="col-md-4 control-label">外部网络</label>
+
+                    <div class="col-md-4">
+                        <p>{{ deploy.net_ex }}</p>
                     </div>
+                </div>
 
 
-                    <legend>存储设置</legend>
-                    <!-- Multiple Radios -->
-                    <div class="row">
-                        <label class="col-md-4 control-label" for="radios">存储后端</label>
-                        <div class="col-md-4">
-                            <p>LVM</p>
-                        </div>
+                <legend>存储设置</legend>
+                <!-- Multiple Radios -->
+                <div class="row">
+                    <label class="col-md-4 control-label" for="radios">存储后端</label>
+
+                    <div class="col-md-4">
+                        <p>LVM</p>
                     </div>
+                </div>
 
             </div>
         </div>
     </div>
+    <script>
+        $(function () {
+            $("#startInstall").click(function () {
+                        $.get("install/all", function (result) {
+                            alert(result);
+                            location.reload();
+                        });
+                    }
+            );
+
+            /*第一次读取最新通知*/
+            setTimeout(function () {
+                        updateProgress();
+                    },
+                    200);
+
+            /*30轮询读取函数*/
+            setInterval(function () {
+
+                        updateProgress();
+
+                    },
+                    3000);
+
+            /*请求函数的ajax*/
+            function updateProgress() {
+                $.ajax({
+                    type: "GET",
+                    url: "/progress/get",
+                    cache: false,
+                    success: function (data) {
+                        $.each(data, function (name, value) {
+                            console.log(name);
+                            console.log(value);
+                            var obj = $("#" + name + "-progress");
+                            if (obj) {
+                                obj.css("width", value + "%");
+                            }
+                        });
+
+                    }
+
+
+                });
+            };
+        });
+
+    </script>
 {% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block contain %}
+    <div class="contain">
+        <div class="row">
+            <div class="col-md-6">
+                <h3>部署日志</h3>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+           <pre style="background-color: #000000; color: #ffffff">{% for log in logs %}
+{{ log }}{% endfor %}
+           </pre>
+        </div>
+    </div>
+    <script>
+
+    </script>
+{% endblock %}

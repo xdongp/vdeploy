@@ -1,4 +1,10 @@
 #!/bin/bash
+export LOG_FILE="./install.log"
+
+function logit() {
+    echo "`date` - ${*}" >> ${LOG_FILE}
+}
+
 function handle_network()
 {
 	cd /etc/udev/rules.d && mv 70-persistent-net.rules /root/ 
@@ -119,3 +125,58 @@ function execute_cmd()
         return 0
 }
 
+
+function keygen()
+{
+expect << EOF
+
+spawn  ssh-keygen -t rsa
+while 1 {
+
+        expect {
+                        "Enter file in which to save the key*" {
+                                        send "\n"
+                        }
+                        "Enter passphrase*" {
+                                        send "\n"
+                        }
+                        "Enter same passphrase again:" {
+                                        send "\n"
+                                        }
+
+                        "Overwrite (y/n)" {
+                                        send "y\n"
+                        }
+                        eof {
+                                   exit
+                        }
+
+        }
+}
+EOF
+}
+
+
+function copy_ssh()
+{
+DEST=$1
+PASS=$2
+expect << EOF
+
+spawn ssh-copy-id root@$DEST
+while 1 {
+
+        expect {
+                        "Are you sure you want to continue connecting (yes/no)?" {
+                                        send "yes\n"
+                        }
+                        "*password" {
+                                        send "$PASS\n"
+                        }
+                        eof {
+                                   exit
+                        }
+
+        }
+}
+EOF

@@ -15,7 +15,17 @@ class Host(db.Model):
     disk = db.Column(db.Integer)   #单位MB
     interface = db.Column(db.VARCHAR(256)) #json格式
     status = db.Column(db.Boolean, default=False)
+    progress = db.Column(db.Integer, default=0)
 
+    @classmethod
+    def update_progress(cls, ip, num):
+        obj = cls.query.filter(cls.ip==ip).first()
+        if obj:
+            obj.progress = num
+            db.session.commit()
+            return True
+        else:
+            return False
 
 class Role(db.Model):
     """
@@ -33,7 +43,6 @@ class Role(db.Model):
         self.role = role
         self.host_id = host_id
 
-
     @classmethod
     def create_not_exist(cls, role, host_id):
         objs = cls.query.filter(and_(cls.role==role, cls.host_id==host_id)).all()
@@ -41,7 +50,7 @@ class Role(db.Model):
             return True
         if role not in cls.ROLE_CHOISE:
             return False
-        role =  Role(role, host_id)
+        role = Role(role, host_id)
         db.session.add(role)
         db.session.commit()
         return True
@@ -54,6 +63,7 @@ class Deploy(db.Model):
     net_compute = db.Column(db.VARCHAR(8), nullable=False)
     net_ex = db.Column(db.VARCHAR(8), nullable=False)
     store_model = db.Column(db.VARCHAR(8), nullable=False)
+    progress = db.Column(db.Integer, default=0)
 
 
     def __init__(self, name, net_model, net_manage, net_compute,  net_ex, store_model):
@@ -63,6 +73,8 @@ class Deploy(db.Model):
         self.net_compute = net_compute
         self.net_ex = net_ex
         self.store_model = store_model
+        self.progress = 0
+
 
     @classmethod
     def create(cls, net_model, net_manage, net_compute,  net_ex, store_model):
@@ -91,8 +103,17 @@ class Deploy(db.Model):
             return False
         for k, v in dct.items():
             attr = getattr(obj, k, None)
-            if attr:
+            if attr is not None:
                 setattr(obj, k, v)
 
         db.session.commit()
+        return True
+
+    @classmethod
+    def update_progress(cls, num):
+        obj = Deploy.get()
+        if not obj:
+            return False
+        dct = {"progress": num}
+        Deploy.update(dct)
         return True

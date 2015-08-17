@@ -36,15 +36,19 @@ def deploy():
 
 @blue_print.route("/logs")
 def logs():
-    hosts = Host.query.all()
-    deploy = Deploy.get()
-    role = Role.query.join(Host).all()
-    return render_template("hosts.html", hosts=hosts, deploy=deploy, role=role)
+    f = "%s/script/install.log" % config.ROOT_DIR
+    logs = []
+    with open(f) as fd:
+        logs = fd.readlines()
+        logs = [log.strip("\n") for log in logs]
+    return render_template("logs.html", logs=logs)
 
 
 @blue_print.route("/clear")
 def clear():
     hosts = Host.query.all()
+    for host in hosts:
+        host.progress = 0
     Deploy.clear()
     roles = Role.query.all()
     for role in roles:
@@ -54,7 +58,7 @@ def clear():
 
 
 @blue_print.route("/setconfig", methods=["GET", "POST"])
-def setConfig():
+def set_config():
     if request.method == "POST":
         print request.form
         dct = {}
@@ -85,14 +89,17 @@ def setConfig():
         return render_template("config.html", hosts=hosts, deploy=deploy)
 
 
-@blue_print.route("/installall", methods=["GET", "POST"])
-def installAll():
+@blue_print.route("/install/all", methods=["GET", "POST"])
+def install_all():
     with config.g_deploy_lock:
-        if not config.g_deploy_status:
-            config.g_deploy_status = True
+        deploy = Deploy.get()
+        if not deploy:
+            return "deploy not exist"
+        if deploy.progress <= 0:
+            Deploy.update_progress(1)
             # 开始部署, 后台操作
-            deploy = Deploy.get()
             role = Role.query.join(Host).all()
+            hosts = Host.query.all()
             control = ""
             compute = []
             for e in role:
@@ -102,17 +109,19 @@ def installAll():
                     compute.append(e.host.ip)
 
             makeConfig(deploy, control, compute)
-            grantSsh()
+            grantSsh(hosts)
             backendInstall()
             return "deploy all env"
         else:
             return "deploy all env exist"
 
 
-@blue_print.route("/installone", methods=["GET", "POST"])
-def installOne():
+@blue_print.route("/install/one", methods=["GET", "POST"])
+def install_one():
     with config.g_deploy_lock:
-        if not config.g_deploy_status:
+        deploy = Deploy.get()
+        if deploy.progress <= 0:
+            Deploy.update_progress(1)
             # 开始部署, 后台操作
             #makeConfig(env)
             #backendInstall()
@@ -120,22 +129,34 @@ def installOne():
         else:
             return "deploy all env exist"
 
+@blue_print.route("/progress", methods=["GET"])
+def progress():
+    progress = request.args.get("progress", -1, type=int)
+    print progress
+    if progress < 0 or progress > 100:
+         return jsonify({'status': 'fail'})
+    Deploy.update_progress(progress)
+    return jsonify({'status': 'succ'})
 
-@blue_print.route("/startinstall", methods=["GET", "POST"])
-def startInstall():
-    if not config.g_deploy_status:
-        config.g_deploy_status = True
-        return jsonify({'status': 'succ'})
-    else:
-        return jsonify({'status': 'fail'})
+@blue_print.route("/progress/get", methods=["GET"])
+def get_progress():
+    dct = {}
+    obj = Deploy.get()
+    if obj:
+        dct["main"] = obj.progress
 
+    hosts = hosts = Host.query.all()
+    for host in hosts:
+        dct[host.hostname] = host.progress
+    return jsonify(dct)
 
-@blue_print.route("/finishinstall", methods=["GET", "POST"])
-def finishInstall():
-    if config.g_deploy_status:
-        config.g_deploy_status = False
-        return jsonify({'status': 'succ'})
-    else:
-        return jsonify({'status': 'fail'})
+@blue_print.route("/host/progress", methods=["GET", "POST"])
+def host_progress():
+    progress = request.args.get("progress", -1, type=int)
+    ip = request.args.get("ip", "")
+    if not ip or progress < 0 or progress > 100:
+         return jsonify({'status': 'fail'})
+    Host.update_progress(ip, progress)
+    return jsonify({'status': 'succ'})
 
 
