@@ -20,6 +20,7 @@
                     <th>磁盘</th>
                     <th>网卡</th>
                     <th>状态</th>
+                    <th>操作</th>
                 </tr>
                 {% for host in hosts %}
                     <tr>
@@ -42,7 +43,10 @@
                             {{ host.interface }}
                         </td>
                         <td>
-                            {{ hosts.status }}
+                            {{ host.status }}
+                        </td>
+                        <td>
+                            <a href="/host/init?id={{ host.id }}">获取信息</a>
                         </td>
                     </tr>
                 {% endfor %}

@@ -27,7 +27,6 @@ def nohup_exec(cmd):
         pass
     return False
 
-
 def exec_script(script):
     filename = "%s/%s" % (config.SCRIPT_DIR, script)
     if not os.path.exists(filename):

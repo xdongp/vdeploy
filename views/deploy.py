@@ -160,7 +160,7 @@ def host_progress():
 
 @blue_print.route("/host/init", methods=["GET", "POST"])
 def host_init():
-    host_id = request.form.get("id", "", type=int)
+    host_id = request.args.get("id", "", type=int)
     host = Host.query.get(host_id)
     dct = init_host(host.ip, host.user, host.passwd)
     host.cpu_model = dct['cpu_model']
