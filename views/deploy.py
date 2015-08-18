@@ -158,13 +158,17 @@ def host_progress():
     Host.update_progress(ip, progress)
     return jsonify({'status': 'succ'})
 
-@blue_print.route("/host/add", methods=["GET", "POST"])
+@blue_print.route("/host/init", methods=["GET", "POST"])
 def host_init():
     host_id = request.form.get("id", "", type=int)
     host = Host.query.get(host_id)
     dct = init_host(host.ip, host.user, host.passwd)
     host.cpu_model = dct['cpu_model']
-    host.cpu_model = dct['cpu_model']
-
+    host.cpu_num = dct['cpu_num']
+    host.mem = dct['mem']
+    host.disk = dct['disk']
+    host.network = dct['if']
+    db.session.commit()
+    return jsonify({'status': 'succ'})
 
 
