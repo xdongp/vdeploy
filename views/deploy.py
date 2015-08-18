@@ -43,7 +43,6 @@ def logs():
         logs = [log.strip("\n") for log in logs]
     return render_template("logs.html", logs=logs)
 
-
 @blue_print.route("/clear")
 def clear():
     hosts = Host.query.all()
@@ -108,9 +107,9 @@ def install_all():
                 elif e.role == "compute":
                     compute.append(e.host.ip)
 
-            makeConfig(deploy, control, compute)
-            grantSsh(hosts)
-            backendInstall()
+            make_config(deploy, control, compute)
+            grant_ssh(hosts)
+            backend_install()
             return "deploy all env"
         else:
             return "deploy all env exist"
@@ -158,5 +157,14 @@ def host_progress():
          return jsonify({'status': 'fail'})
     Host.update_progress(ip, progress)
     return jsonify({'status': 'succ'})
+
+@blue_print.route("/host/add", methods=["GET", "POST"])
+def host_init():
+    host_id = request.form.get("id", "", type=int)
+    host = Host.query.get(host_id)
+    dct = init_host(host.ip, host.user, host.passwd)
+    host.cpu_model = dct['cpu_model']
+    host.cpu_model = dct['cpu_model']
+
 
 

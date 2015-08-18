@@ -8,11 +8,11 @@ g_deploy_status = 0
 
 
 DEBUG = False
-ROOT_DIR = "/Users/xdpan/PycharmProjects/vdeploy"#os.path.dirname(os.path.abspath("__file__"))
+ROOT_DIR = os.path.dirname(os.path.abspath("__file__"))
 LOG_DIR = "%s/log" % ROOT_DIR
 SCRIPT_DIR = "%s/script" % ROOT_DIR
 
-SQLALCHEMY_DATABASE_URI = "sqlite:////Users/xdpan/PycharmProjects/vdeploy/vdeploy.db"
+SQLALCHEMY_DATABASE_URI = "sqlite:///%s/vdeploy.db" % ROOT_DIR
 
 
 

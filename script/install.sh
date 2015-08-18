@@ -16,9 +16,10 @@ function install_control(){
 function install_compute(){
     host=$1
     curl "http://127.0.0.1:8080/host/progress?progress=10&ip=$host"
-    scp compute_init.sh $host:/opt/
-    scp compute_install.sh $host:/opt/
-    ssh $host chmod +x /opt/*.sh
+    ssh $host mkdir -p $ROOT_DIR/script
+    scp compute_init.sh $host:$ROOT_DIR/script
+    scp compute_install.sh $host:$ROOT_DIR/script
+    ssh $host chmod +x $ROOT_DIR/script/*.sh
     curl "http://127.0.0.1:8080/host/progress?progress=30&ip=$host"
     bash compute_init.sh
     curl "http://127.0.0.1:8080/host/progress?progress=50&ip=$host"
@@ -35,15 +36,15 @@ execute_cmd "yum -y install expect"
 curl  $SERVICE_URL/progress?progress=20
 
 echo "建立信任过关系"
-if [ -f auth_ssh.sh ]; then
-    bash auth_ssh.sh
-else
-    exit 1
-fi
+#if [ -f auth_ssh.sh ]; then
+#    bash auth_ssh.sh
+#else
+#    exit 1
+#fi
 curl  $SERVICE_URL/progress?progress=30
 
 echo "安装控制节点"
-install_control $CONTROL
+#install_control $CONTROL
 curl  $SERVICE_URL/progress?progress=40
 echo "安装计算节点"
 num=${#COMPUTE[@]}
@@ -58,4 +59,4 @@ for ((i=0;i<num;i++))
 }
 sleep 5
 curl $SERVICE_URL/progress?progress=100
-echo "finish install" >> install.log
+echo "finish install"
