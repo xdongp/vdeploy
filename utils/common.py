@@ -41,25 +41,45 @@ def get_cpu_info(ip, user, passwd):
     (ret, cpu_model) = ssh2(ip, user, passwd, cmd)
     cmd = "grep 'processor' /proc/cpuinfo  |wc -l"
     (ret, cpu_num) = ssh2(ip, user, passwd, cmd)
-    return {"cpu_model": cpu_model, "cpu_num": cpu_num}
+    return {"cpu_model": cpu_model[0].strip("\n"), "cpu_num": cpu_num[0].strip("\n")}
 
 def get_mem_info(ip, user, passwd):
     cmd = "free -m|grep 'Mem' |awk  '{print $2}'"
     (ret, mem) = ssh2(ip, user, passwd, cmd)  #单位：MB
-    return mem
+    return mem[0].strip("\n")
 
 def get_disk_info(ip, user, passwd):
     """
     功能： 获取磁盘大小，可能会有问题
     """
-    cmd = "fdisk -l|grep Disk|grep dev|awk 'BEGIN{count=0}{count+=$3}END{print count}"
+    cmd = "fdisk -l|grep Disk|grep dev|awk 'BEGIN{count=0}{count+=$3}END{print count}'"
     (ret, disk) = ssh2(ip, user, passwd, cmd)  #单位：GB
-    return disk
+    if disk:
+        return disk[0].strip("\n")
+    return "0"
 
 def get_if_info(ip, user, passwd):
-    cmd = "ls /sys/class/net/|grep -e '^e[t|m]'"
+    cmd = "ifconfig -a | sed 's/[ \t].*//;/^$/d'"
     (ret, ifs) = ssh2(ip, user, passwd, cmd)
-    return ",".join([e.strip() for e in ifs.split("\n")])
+    lst = []
+    for e in ifs:
+        if e.startswith("eth") or e.startswith("em"):
+            lst.append(e.strip("\n"))
+    return ",".join(lst)
+
+def check_host(ip, user, passwd):
+    """
+    功能：检查主机密码是否正确
+    """
+    (code, msg) = ssh2(ip, user, passwd, "date")
+    return code
+
+def change_hostname(ip, hostname, user, passwd):
+    cmd = "sed -i 's/HOSTNAME=.*$/HOSTNAME=%s/g' /etc/sysconfig/network" % hostname
+    ssh2(ip, user, passwd, cmd)
+    cmd = "hostname %s" % hostname
+    ssh2(ip, user, passwd, cmd)
+    return True
 
 def grant_ssh(ip, user, passwd):
     """
@@ -67,15 +87,15 @@ def grant_ssh(ip, user, passwd):
     """
     return exec_script("auth_ssh.sh %s %s" % (ip, passwd))
 
-def init_host(ip, user, passwd):
+def get_host_info(ip, user, passwd):
     """
-    功能： 初始化服务器，获取服务器信息，并返回
+    功能：获取服务器信息，并返回
     """
     cpu_info = get_cpu_info(ip, user, passwd)
     mem_info = get_mem_info(ip, user, passwd)
     disk_info = get_disk_info(ip, user, passwd)
     if_info = get_if_info(ip, user, passwd)
-    grant_ssh(ip, user, passwd)
+    #grant_ssh(ip, user, passwd)
     dct = {"mem": mem_info, "disk": disk_info, "if": if_info}
     dct.update(cpu_info)
     return dct
