@@ -119,31 +119,30 @@ function execute_cmd()
 function keygen()
 {
 if [ ! -f /root/.ssh/id_rsa.pub ]; then
-    expect << EOF
+expect << EOF
+spawn  ssh-keygen -t rsa
+while 1 {
 
-    spawn  ssh-keygen -t rsa
-    while 1 {
+        expect {
+                        "Enter file in which to save the key*" {
+                                        send "\n"
+                        }
+                        "Enter passphrase*" {
+                                        send "\n"
+                        }
+                        "Enter same passphrase again:" {
+                                        send "\n"
+                                        }
+                        "Overwrite (y/n)" {
+                                        send "y\n"
+                        }
+                        eof {
+                                   exit
+                        }
 
-            expect {
-                            "Enter file in which to save the key*" {
-                                            send "\n"
-                            }
-                            "Enter passphrase*" {
-                                            send "\n"
-                            }
-                            "Enter same passphrase again:" {
-                                            send "\n"
-                                            }
-                            "Overwrite (y/n)" {
-                                            send "y\n"
-                            }
-                            eof {
-                                       exit
-                            }
-
-            }
-    }
-    EOF
+        }
+}
+EOF
 fi
 }
 
@@ -153,7 +152,6 @@ function copy_ssh()
 DEST=$1
 PASS=$2
 expect << EOF
-
 spawn ssh-copy-id root@$DEST
 while 1 {
 

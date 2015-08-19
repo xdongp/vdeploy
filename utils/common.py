@@ -32,7 +32,7 @@ def exec_script(script):
     if not os.path.exists(filename):
         return False
     # 后台执行安装
-    cmd = "cd %s && sh %s > %s/install.log" % (config.SCRIPT_DIR, script, config.SCRIPT_DIR)
+    cmd = "cd %s && sh %s &>>%s/install.log" % (config.SCRIPT_DIR, script, config.SCRIPT_DIR)
     nohup_exec(cmd)
     return True
 
@@ -110,9 +110,9 @@ def make_config(deploy, control, computes):
     net_model = deploy.net_model  # 暂时只支持vlan
     store_model = deploy.store_model  # 暂时不支持存储模式
 
-    conf = """
-#!/bin/sh
-export SERVICE_URL=http://127.0.0.1:8080
+    conf = """#!/bin/sh
+export ROOT_DIR=/root/vdeploy
+export SERVICE_URL=http://127.0.0.1:%d
 export CONTROL='%s'
 export COMPUTE=(%s)
 export NETMODEL=%s
@@ -123,7 +123,7 @@ export STORE=%s
 export PASS='verystack0okm'
 export MYIP=`ifconfig $NETDEV|grep "inet addr:"|awk '{print $2}'|awk -F':' '{print $2}'`
 export MYMAC=`ifconfig $NETDEV|grep HW|awk  '{print $5}'`
-""" % (control, " ".join(computes), net_model, net_manage, net_compute, net_ex, store_model)
+""" % (config.PORT, control, " ".join(computes), net_model, net_manage, net_compute, net_ex, store_model)
     filename = "%s/config.sh" % config.SCRIPT_DIR
     with open(filename, "w") as fd:
         fd.write(conf)

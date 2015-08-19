@@ -12,6 +12,7 @@ app.config['SECRET_KEY'] = "123456"
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 toolbar = DebugToolbarExtension(app)
 
+import config
 from models import db
 from models.deploy import *
 
@@ -46,4 +47,4 @@ def page_not_found(e):
         return render_template('404.html'), 404
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=8080)
+    app.run(host="0.0.0.0", port=config.PORT)

@@ -9,9 +9,11 @@
         </div>
         <hr>
         <div class="row">
+	{%if logs %}
            <pre style="background-color: #000000; color: #ffffff">{% for log in logs %}
 {{ log }}{% endfor %}
            </pre>
+	{% endif %}
         </div>
     </div>
     <script>

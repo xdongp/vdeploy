@@ -1,9 +1,8 @@
-
 #!/bin/sh
 export ROOT_DIR=/root/vdeploy
-export SERVICE_URL=http://127.0.0.1:8080
+export SERVICE_URL=http://127.0.0.1:22222
 export CONTROL='172.16.18.170'
-export COMPUTE=(172.16.18.170 172.16.18.171)
+export COMPUTE=(172.16.18.171)
 export NETMODEL=VLAN
 export NETDEV=eth0
 export TRUNKDEV=eth1

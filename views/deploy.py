@@ -39,9 +39,12 @@ def deploy():
 def logs():
     f = "%s/script/install.log" % config.ROOT_DIR
     logs = []
-    with open(f) as fd:
-        logs = fd.readlines()
-        logs = [log.strip("\n") for log in logs]
+    try:
+        with open(f) as fd:
+            logs = fd.readlines()
+            logs = [log.strip("\n").decode("utf-8") for log in logs]
+    except:
+        pass
     return render_template("logs.html", logs=logs)
 
 
@@ -110,7 +113,7 @@ def install_all():
                     compute.append(e.host.ip)
 
             make_config(deploy, control, compute)
-            grant_ssh(hosts)
+            #grant_ssh(hosts)
             backend_install()
             return "deploy all env"
         else:
@@ -176,7 +179,7 @@ def host_add():
         if not ret:
             return jsonify({'status': 'fail', 'msg': 'check host fail'})
 
-        # grant_ssh(host.ip, host.user, host.passwd)
+        grant_ssh(host.ip, host.user, host.passwd)
         change_hostname(host.ip, host.hostname, host.user, host.passwd)
 
         dct = get_host_info(host.ip, host.user, host.passwd)
