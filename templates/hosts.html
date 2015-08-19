@@ -1,6 +1,53 @@
 {% extends 'base.html' %}
 
 {% block contain %}
+    <!-- 增加VS -->
+    <div class="modal" id="add_host" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span
+                            aria-hidden="true">&times;</span><span
+                            class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="myModalLabel">添加机器</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" id="add_host_form" role="form">
+                        <div class="form-group">
+                            <label for="hostname" class="col-sm-2 control-label">主机</label>
+
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="hostname" name="hostname"
+                                       placeholder="请输入主机名称">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="ip" class="col-sm-2 control-label">IP</label>
+
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="ip" name="ip"
+                                       placeholder="请输入IP">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="passwd" class="col-sm-2 control-label">密码</label>
+
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="passwd" name="passwd"
+                                       placeholder="请输入密码">
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button type="submit" class="btn btn-primary" id="submit">添加</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="contain">
         <div class="row">
             <div class="col-md-6">
@@ -9,7 +56,8 @@
             <div class="col-md-6 right-div">
                 <a class="pull-right btn btn-default right-button" href="setconfig">配置部署</a>
                 <a class="pull-right btn btn-default right-button">刷新</a>
-                <a class="pull-right btn btn-default right-button">添加</a>
+                <a class="pull-right btn btn-default right-button" data-toggle="modal"
+                    data-target="#add_host" >添加</a>
             </div>
             <table class="table table-bordered">
                 <tr>
@@ -20,29 +68,33 @@
                     <th>磁盘</th>
                     <th>网卡</th>
                     <th>状态</th>
+                    <th>操作</th>
                 </tr>
                 {% for host in hosts %}
                     <tr>
                         <td>
-                            {{host.hostname}}
+                            {{ host.hostname }}
                         </td>
                         <td>
-                            {{host.ip}}
+                            {{ host.ip }}
                         </td>
                         <td>
-                            {{ host.cpu_model }} x {{  host.cpu_num }}
+                            {{ host.cpu_model }} x {{ host.cpu_num }}
                         </td>
                         <td>
                             {{ host.mem }} MB
                         </td>
                         <td>
-                            {{ host.disk/1000 }} GB
+                            {{ host.disk }} GB
                         </td>
                         <td>
                             {{ host.interface }}
                         </td>
                         <td>
-                            {{ hosts.status }}
+                            {{ host.status }}
+                        </td>
+                        <td>
+                            <a href="/host/del?id={{ host.id }}">删除</a>
                         </td>
                     </tr>
                 {% endfor %}
@@ -50,4 +102,81 @@
         </div>
 
     </div>
+    <script>
+
+    $(document).ready(function () {
+
+
+        $('#add_host_form').bootstrapValidator({
+            feedbackIcons: {
+                valid: 'glyphicon glyphicon-ok',
+                invalid: 'glyphicon glyphicon-remove',
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            message: '输入不合法',
+            fields: {
+                hostname: {
+                    message: '名字不能为空',
+                    validators: {
+                        notEmpty: {
+                            message: '名字不能为空'
+                        },
+                        regexp: {
+                            regexp: /^[a-zA-Z\d._-]+$/,
+                            message: '名字不能为空，并且必选为[a-zA-Z0-9._-]'
+                        }
+                    }
+                },
+                ip: {
+                    message: 'tags不能为空',
+                    validators: {
+                        notEmpty: {
+                            message: 'tags不能为空'
+                        },
+                        remote: {
+                            url: '/ajax_val_ip',
+                            message: 'IP不可用，请确认IP是否正确'
+                        }
+                    }
+                },
+                'passwd': {
+                    message: '密码不能为空',
+                    validators: {
+                        notEmpty: {
+                            message: '密码不能为空'
+                        }
+                    }
+                }
+            }})
+                .on('success.form.bv', function (e) {
+                    // Prevent form submission
+                    e.preventDefault();
+
+                    // Get the form instance
+                    var $form = $(e.target);
+
+                    // Get the BootstrapValidator instance
+                    var bv = $form.data('bootstrapValidator');
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/host/add",
+                        data: $form.serialize(),
+                        success: function (msg) {
+                            $("#add_host").modal('hide');
+                            if (msg['status'] == 'succ') {
+                                location.reload();
+                            } else {
+                                alert("添加失败, msg:" + msg['msg']);
+                            }
+                        },
+                        error: function () {
+                            $("#add_host").modal('hide');
+                            alert("添加失败");
+                        }
+                    });
+                });
+
+    });
+    </script>
 {% endblock %}

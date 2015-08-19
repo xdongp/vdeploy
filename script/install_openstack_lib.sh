@@ -14,17 +14,7 @@ function handle_network()
 	then
 		echo "缺少网卡文件"
 		exit 1
-	else 
-		#mv ifcfg-eth0  ifcfg-eth2.bak
-		#mv ifcfg-eth1  ifcfg-eth3.bak
-		#mv ifcfg-eth2  ifcfg-eth0
-		#mv ifcfg-eth3  ifcfg-eth1
-		#mv ifcfg-eth2.bak  ifcfg-eth2
-		#mv ifcfg-eth3.bak  ifcfg-eth3
-		#sed  -i "s/eth2/eth0/g" ifcfg-eth0
-		#sed  -i "s/eth3/eth1/g" ifcfg-eth1
-		#sed  -i "s/eth0/eth2/g" ifcfg-eth2
-		#sed  -i "s/eth1/eth3/g" ifcfg-eth3
+	else
 		mv ifcfg-eth0 ifcfg-em1 && sed  -i "s/eth0/em1/g" ifcfg-em1
 		mv ifcfg-eth1 ifcfg-em2 && sed  -i "s/eth1/em2/g" ifcfg-em2
 		mv ifcfg-eth2 ifcfg-em3 && sed  -i "s/eth2/em3/g" ifcfg-em3
@@ -128,8 +118,8 @@ function execute_cmd()
 
 function keygen()
 {
+if [ ! -f /root/.ssh/id_rsa.pub ]; then
 expect << EOF
-
 spawn  ssh-keygen -t rsa
 while 1 {
 
@@ -143,7 +133,6 @@ while 1 {
                         "Enter same passphrase again:" {
                                         send "\n"
                                         }
-
                         "Overwrite (y/n)" {
                                         send "y\n"
                         }
@@ -154,6 +143,7 @@ while 1 {
         }
 }
 EOF
+fi
 }
 
 
@@ -162,7 +152,6 @@ function copy_ssh()
 DEST=$1
 PASS=$2
 expect << EOF
-
 spawn ssh-copy-id root@$DEST
 while 1 {
 
@@ -180,3 +169,4 @@ while 1 {
         }
 }
 EOF
+}
