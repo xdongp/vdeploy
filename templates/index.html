@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block page %}
+        <!-- BEGIN PAGE HEADER -->
+        <div class="page-bar">
+            <ul class="page-breadcrumb">
+                <li>
+                    <i class="fa fa-home"></i>
+                    <a href="/">Home</a>
+                    <i class="fa fa-angle-right"></i>
+                </li>
+                <li>
+                    <a href="#">首页</a>
+                </li>
+            </ul>
+        </div>
+        <h3 class="page-title">
+            首页
+            <small>资源统计</small>
+        </h3>
+        <!-- END PAGE HEADER-->
+
+        <!-- BEGIN DASHBOARD STATS （统计图表） -->
+        <div class="row">
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                <div class="dashboard-stat blue-madison">
+                    <div class="visual">
+                        <i class="fa fa-comments"></i>
+                    </div>
+                    <div class="details">
+                        <div class="number">
+                            2台
+                        </div>
+                        <div class="desc">
+                            主机
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                <div class="dashboard-stat red-intense">
+                    <div class="visual">
+                        <i class="fa fa-bar-chart-o"></i>
+                    </div>
+                    <div class="details">
+                        <div class="number">
+                            8个
+                        </div>
+                        <div class="desc">
+                            CPU
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                <div class="dashboard-stat green-haze">
+                    <div class="visual">
+                        <i class="fa fa-shopping-cart"></i>
+                    </div>
+                    <div class="details">
+                        <div class="number">
+                            16GB
+                        </div>
+                        <div class="desc">
+                            内存
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                <div class="dashboard-stat purple-plum">
+                    <div class="visual">
+                        <i class="fa fa-globe"></i>
+                    </div>
+                    <div class="details">
+                        <div class="number">
+                            2TB
+                        </div>
+                        <div class="desc">
+                            磁盘
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- END DASHBOARD STATS -->
+
+        <div class="clearfix">
+            <div class="panel panel-success">
+                <!-- Default panel contents -->
+                <div class="panel-heading">
+                    <h3 class="panel-title">主机列表</h3>
+                </div>
+
+                <!-- Table -->
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th> # </th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Username</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>
+                            1
+                        </td>
+                        <td>
+                            Mark
+                        </td>
+                        <td>
+                            Otto
+                        </td>
+                        <td>
+                            @mdo
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            2
+                        </td>
+                        <td>
+                            Jacob
+                        </td>
+                        <td>
+                            Thornton
+                        </td>
+                        <td>
+                            @fat
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            3
+                        </td>
+                        <td>
+                            Larry
+                        </td>
+                        <td>
+                            the Bird
+                        </td>
+                        <td>
+                            @twitter
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+{% endblock %}

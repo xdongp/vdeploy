@@ -1,22 +1,65 @@
 {% extends 'base.html' %}
 
-{% block contain %}
-    <div class="contain">
+{% block css %}
+{% endblock %}
+
+{% block content %}
+        <div id="line"  style="visibility: hidden">{{ line }}</div>
         <div class="row">
-            <div class="col-md-6">
-                <h3>部署日志</h3>
+        <div class="col-md-12">
+        <div class="mainbox">
+        <div class="clearfix block-title">
+         <div class="pull-left" >
+            <h3>部署日志</h3>
+         </div>
+            <div class="pull-right right">
+                <a id="trash" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i> 清空</a>
             </div>
-        </div>
-        <hr>
-        <div class="row">
+         </div>
 	{%if logs %}
-           <pre style="background-color: #000000; color: #ffffff">{% for log in logs %}
+           <pre id="code" >{% for log in logs %}
 {{ log }}{% endfor %}
            </pre>
 	{% endif %}
         </div>
-    </div>
+
+        </div>
+</div>
+{% endblock %}
+
+{% block js %}
     <script>
+        function updateLogs() {
+            //alert("ok");
+            var $line = $("#line").html();
+            $.ajax({
+                            type: "GET",
+                            url: "/ajax_get_logs?line=" + $line,
+                            cache: false,
+                            success: function (data) {
+                                $("#line").html(data['line']);
+                                $("#code").append(data['data']);
+                            }
+                        });
+
+        }
+        $(function(){
+                       /*轮询读取函数*/
+            setInterval(function () {
+
+                        updateLogs();
+
+                    },
+                    1000);
+
+            $("#trash").click(function(){
+                $.getJSON("/ajax_clear_logs", function () {
+                    location.reload();
+                })
+            });
+
+        });
+
 
     </script>
 {% endblock %}

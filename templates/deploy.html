@@ -1,22 +1,11 @@
 {% extends 'base.html' %}
 
-{% block contain %}
-    <div class="contain">
-        <div class="row">
-            <div class="col-md-6">
-                <h3>配置部署</h3>
-            </div>
-            <div class="col-md-6 right-div">
-                <a id="startInstall" class="pull-right btn btn-default right-button">开始部署</a>
-                <a class="pull-right btn btn-default right-button" href="clear">清空</a>
-                <a class="pull-right btn btn-default right-button" target="_blank" href="logs">日志</a>
-            </div>
-        </div>
+{% block content %}
 
-        <hr/>
-        <div class="row">
-            <div id="deploy-detail">
-                <legend>部署进度</legend>
+    <div class="row">
+        <div class="col-md-12">
+            <div id="deploy-detail" class="mainbox">
+                <legend>部署进度<span id="main-label" class="tips"></span></legend>
                 {% if deploy and deploy.progress > 0 %}
                     <div class="progress">
                         <div id="main-progress" class="progress-bar progress-bar-success" role="progressbar"
@@ -25,13 +14,13 @@
                         </div>
                     </div>
                 {% else %}
-                    尚未开始  <br><br>
+                    <div class="col-md-offset-1">尚未开始</div> <br>
                 {% endif %}
                 <legend>节点配置</legend>
                 <div class="row">
-                    <label class="col-md-4">控制节点:</label>
+                    <label class="col-md-offset-1 col-md-3"><strong>控制节点:</strong></label>
 
-                    <div class="col-md-6">
+                    <div class="col-md-6 nopadding">
                         <table class="table table-bordered">
                             <tr>
                                 <th>名称</th>
@@ -46,14 +35,27 @@
                                         <td>{{ host.host.ip }}</td>
                                         <td>
                                             <div class="progress">
-                                                <div id="{{ host.host.hostname }}-progress" class="progress-bar progress-bar-success"
+                                                <div id="{{ host.host.hostname }}-progress"
+                                                     class="progress-bar progress-bar-success"
                                                      role="progressbar" aria-valuenow="60"
                                                      aria-valuemin="0" aria-valuemax="100"
                                                      style="width:{{ host.host.progress }}%;">
                                                 </div>
                                             </div>
                                         </td>
-                                        <td>重新部署</td>
+                                        <td>
+                                            {% if host.host.progress <=0 %}
+                                                <a id="{{ host.host.hostname }}-btn" name="deploy-btn"
+                                                   data-hostid="{{ host.host.id }}" class="btn btn-sm blue">开始部署</a>
+                                            {% else %}
+                                                {% if host.host.progress >= 100 %}
+                                                    <a id="{{ host.host.hostname }}-btn" name="deploy-btn"
+                                                       data-hostid="{{ host.host.id }}" class="btn btn-sm blue">重新部署</a>
+                                                {% else %}
+                                                    <a id="{{ host.host.hostname }}-btn" name="deploy-btn"
+                                                       data-hostid="{{ host.host.id }}" class="btn btn-sm blue">部署中</a>
+                                                {% endif %}
+                                            {% endif %}</td>
                                     </tr>
                                 {% endif %}
                             {% endfor %}
@@ -62,9 +64,9 @@
                     </div>
                 </div>
                 <div class="row">
-                    <label class="col-md-4">计算节点:</label>
+                    <label class="col-md-offset-1 col-md-3"><strong>计算节点:</strong></label>
 
-                    <div class="col-md-6">
+                    <div class="col-md-6 nopadding">
                         <table class="table table-bordered">
                             <tr>
                                 <th>名称</th>
@@ -79,14 +81,28 @@
                                         <td>{{ host.host.ip }}</td>
                                         <td>
                                             <div class="progress">
-                                                <div id="{{ host.host.hostname }}-progress" class="progress-bar progress-bar-success"
+                                                <div id="{{ host.host.hostname }}-progress"
+                                                     class="progress-bar progress-bar-success"
                                                      role="progressbar" aria-valuenow="60"
                                                      aria-valuemin="0" aria-valuemax="100"
                                                      style="width:{{ host.host.progress }}%;">
                                                 </div>
                                             </div>
                                         </td>
-                                        <td>重新部署</td>
+                                        <td>
+                                            {% if host.host.progress <=0 %}
+                                                <a id="{{ host.host.hostname }}-btn" name="deploy-btn"
+                                                   data-hostid="{{ host.host.id }}" class="btn btn-sm blue">开始部署</a>
+                                            {% else %}
+                                                {% if host.host.progress >= 100 %}
+                                                    <a id="{{ host.host.hostname }}-btn" name="deploy-btn"
+                                                       data-hostid="{{ host.host.id }}" class="btn btn-sm blue">重新部署</a>
+                                                {% else %}
+                                                    <a id="{{ host.host.hostname }}-btn" name="deploy-btn"
+                                                       data-hostid="{{ host.host.id }}" class="btn btn-sm blue">部署中</a>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
                                     </tr>
                                 {% endif %}
                             {% endfor %}
@@ -96,29 +112,29 @@
                 </div>
 
                 <legend>网络设置</legend>
-                <div class="row">
-                    <label class="col-md-4 control-label" for="radios">网络模型</label>
+                <div class="row col-md-offset-1">
+                    <label class="col-md-3 control-label" for="radios"><strong>网络模型</strong></label>
 
                     <div class="col-md-4">
                         <p>{{ deploy.net_model }}</p>
                     </div>
                 </div>
-                <div class="row">
-                    <label class="col-md-4 control-label">管理网络</label>
+                <div class="row col-md-offset-1">
+                    <label class="col-md-3 control-label"><strong>管理网络</strong></label>
 
                     <div class="col-md-4">
                         <p>{{ deploy.net_manage }}</p>
                     </div>
                 </div>
-                <div class="row">
-                    <label class="col-md-4 control-label">计算网络</label>
+                <div class="row col-md-offset-1">
+                    <label class="col-md-3 control-label"><strong>计算网络</strong></label>
 
                     <div class="col-md-4">
                         <p>{{ deploy.net_compute }}</p>
                     </div>
                 </div>
-                <div class="row">
-                    <label class="col-md-4 control-label">外部网络</label>
+                <div class="row col-md-offset-1">
+                    <label class="col-md-3 control-label"><strong>外部网络</strong></label>
 
                     <div class="col-md-4">
                         <p>{{ deploy.net_ex }}</p>
@@ -128,26 +144,81 @@
 
                 <legend>存储设置</legend>
                 <!-- Multiple Radios -->
-                <div class="row">
-                    <label class="col-md-4 control-label" for="radios">存储后端</label>
+                <div class="row col-md-offset-1">
+                    <label class="col-md-3 control-label" for="radios"><strong>存储后端</strong></label>
 
                     <div class="col-md-4">
                         <p>LVM</p>
                     </div>
                 </div>
 
+                <hr>
+                <div class="clearfix">
+                    <div class="pull-right">
+                        <a class="btn btn-sm btn-default" href="/api/reset"><i class="fa fa-remove"></i>重置</a>
+                        <a id="startInstall" class="btn btn-sm btn-primary"><i class="fa fa-check"></i>部署</a>
+                    </div>
+                </div>
             </div>
+
+
         </div>
+
     </div>
+
+{% endblock %}
+
+{% block js %}
+
+
     <script>
         $(function () {
             $("#startInstall").click(function () {
-                        $.get("install/all", function (result) {
-                            alert(result);
-                            location.reload();
+                        $.ajax({
+                            type: "GET",
+                            url: "/api/install/all",
+                            cache: false,
+                            success: function (data) {
+                                if(data['status'] == 'succ')
+                                    location.reload();
+                                else
+                                    dialog(data['msg']);
+
+                            },
+                            error: function () {
+                                dialog("执行失败");
+                            }
                         });
                     }
             );
+
+            $("[name='deploy-btn']").click(function () {
+                var $text = $(this).html();
+                var $hostid = $(this).data("hostid");
+                var $url = "";
+                if ($text == "重新部署") {
+                    $url = "/api/reinstall/one?id=" + $hostid;
+                } else {
+                    if ($text == "开始部署")
+                        $url = "/api/install/one?id=" + $hostid;
+                }
+                if ($url != "") {
+                    $.ajax({
+                        type: "GET",
+                        url: $url,
+                        cache: false,
+                        success: function (data) {
+
+                        },
+                        error: function () {
+                            dialog("执行失败");
+                        }
+
+
+                    });
+
+                }
+            })
 
             /*第一次读取最新通知*/
             setTimeout(function () {
@@ -155,7 +226,7 @@
                     },
                     200);
 
-            /*30轮询读取函数*/
+            /*轮询读取函数*/
             setInterval(function () {
 
                         updateProgress();
@@ -167,16 +238,41 @@
             function updateProgress() {
                 $.ajax({
                     type: "GET",
-                    url: "/progress/get",
+                    url: "/api/progress/get",
                     cache: false,
                     success: function (data) {
                         $.each(data, function (name, value) {
                             console.log(name);
                             console.log(value);
+                            if (name == "main") {
+                                var $label = $("#main-label");
+                                if (value <= 0) {
+                                    $label.html("部署未开始");
+                                } else {
+                                    if (value >= 100)
+                                        $label.html("部署已完成");
+                                    else
+                                        $label.html("部署进行中");
+                                }
+
+                            }
                             var obj = $("#" + name + "-progress");
                             if (obj) {
                                 obj.css("width", value + "%");
                             }
+                            var $btn = $("#" + name + "-btn");
+                            if (value <= 0) {
+                                $btn.html("开始部署");
+                            } else {
+                                if (value >= 100)
+                                    $btn.html("重新部署");
+                                else
+                                    $btn.html("部署中");
+
+
+                            }
+
+
                         });
 
                     }

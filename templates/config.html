@@ -1,181 +1,425 @@
 {% extends 'base.html' %}
 
-{% block contain %}
-    <div class="contain">
+{% block content %}
 
-        <div class="row">
-            <form class="form-horizontal" action="setconfig" method="post">
-                <fieldset>
-
-                    <!-- Form Name -->
-                    <legend>节点配置</legend>
-
-                    <!-- Select Basic -->
-                    <div class="form-group">
-                        <label class="col-md-4 control-label" for="control">控制节点</label>
-
-                        <div class="col-md-4">
-                            <select id="control" name="control" class="form-control">
-                                {% for host in hosts %}
-                                <option value="{{ host.id }}">{{ host.hostname }}-->{{ host.ip }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Select Basic -->
-                    <div class="form-group">
-                        <label class="col-md-4 control-label" for="compute">计算节点</label>
-
-                        <div class="col-md-4">
-                            <table class="table table-bordered">
-                                <tr>
-                                    <th>主机名</th>
-                                    <th>IP</th>
-                                    <td><input type="checkbox" name="compute-all" id="compute-all"></td>
-                                </tr>
-                               {% for host in hosts %}
-                                <tr>
-                                    <td>{{ host.hostname }}</td>
-                                    <td>{{ host.ip }}</td>
-                                    <td><input type="checkbox" name="compute" id="compute-{{ host.id }}" value="{{ host.id }}" checked="checked"></td>
-                                </tr>
-                                {% endfor %}
-                            </table>
-                        </div>
-                    </div>
-
-                </fieldset>
-
-                <fieldset>
-
-                    <legend>网络设置</legend>
-
-                    <!-- Multiple Radios -->
-                    <div class="form-group">
-                        <label class="col-md-4 control-label" for="net-model">网络模型</label>
-
-                        <div class="col-md-4">
-                            <div class="radio">
-                                <label for="radios-0">
-                                    <input type="radio" name="net-model"  value="VLAN"
-                                           {% if deploy.net_model == 'VLAN' %}
-                                           checked="checked"
-                                           {% endif %}
-                                            >
-                                    VLAN
-                                </label>
-                            </div>
-                            <div class="radio">
-                                <label for="radios-1">
-                                    <input type="radio" name="net-model"
-                                           value="GRE"
-                                           {% if deploy.net_model == 'GRE' %}
-                                           checked="checked"
-                                           {% endif %}
-                                            >
-                                    GRE
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="col-md-4 control-label" for="radios">管理网络</label>
-
-                        <div class="col-md-4">
-                            <label class="radio-inline" for="manage-net">
-                                <input type="radio" name="net-manage" id="manage-net-0" value="eth0"
-                                       {% if deploy.net_manage == "eth0" %}
-                                       checked="checked"
-                                       {% endif %}
-                                        >
-                                eth0
-                            </label>
-                            <label class="radio-inline" for="radios-1">
-                                <input type="radio" name="net-manage" id="manage-net-1" value="eth1"
-                                       {% if deploy.net_manage == "eth1" %}
-                                       checked="checked"
-                                       {% endif %}
-                                        >
-                                eth1
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="col-md-4 control-label" for="net-compute">计算网络</label>
-
-                        <div class="col-md-4">
-                            <label class="radio-inline" for="net-compute">
-                                <input type="radio" name="net-compute" id="compute-net-0" value="eth0"
-                                       {% if deploy.net_compute == "eth1" %}
-                                       checked="checked"
-                                       {% endif %}
-                                        >
-                                eth0
-                            </label>
-                            <label class="radio-inline" for="radios-1">
-                                <input type="radio" name="net-compute" id="compute-net-1" value="eth1"
-                                       {% if deploy.net_compute == "eth1" %}
-                                       checked="checked"
-                                       {% endif %}>
-                                eth1
-                            </label>
-                        </div>
-                    </div>
-
-                 <div class="form-group">
-                        <label class="col-md-4 control-label" for="net-ex">外部网络</label>
-
-                        <div class="col-md-4">
-                            <label class="radio-inline" for="net-ex">
-                                <input type="radio" name="net-ex" id="compute-net-0" value="eth0" checked="checked">
-                                eth0
-                            </label>
-                            <label class="radio-inline" for="radios-1">
-                                <input type="radio" name="net-ex" id="compute-net-1" value="eth1">
-                                eth1
-                            </label>
-                        </div>
-                    </div>
-
-
-                </fieldset>
-
-                <fieldset>
-
-                    <legend>存储设置</legend>
-
-                    <!-- Multiple Radios -->
-                    <div class="form-group">
-                        <label class="col-md-4 control-label" for="store-model">存储后端</label>
-
-                        <div class="col-md-4">
-                            <div class="radio">
-                                <label for="radios-0">
-                                    <input type="radio" name="store-model" id="storage-0" value="LVM" checked="checked">
-                                    LVM
-                                </label>
-                            </div>
-                            <div class="radio">
-                                <label for="radios-1">
-                                    <input type="radio" name="store-model" id="storage-1" value="CEPH">
-                                    CEPH
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                </fieldset>
-                <div class="modal-footer">
-                    <a href="/deploy" class="btn btn-default">返回</a>
-                    <button type="submit" class="btn btn-primary" id="submit">提交</button>
+    <div class="modal fade" id="basic" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">是否添加到计算节点</h4>
                 </div>
+                <div class="modal-body">
+                    添加到计算节点以后，可以在部署页面执行部署操作
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="idle-submit">提交</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
 
-            </form>
+    <div class="row">
+    <div class="col-md-12">
+    <!-- BEGIN PORTLET-->
+    <div class="portlet box">
+    <div class="portlet-body form">
+    <!-- BEGIN FORM-->
+    <form id="deploy_form" action="/config" method="post" class="form-horizontal form-bordered"
+          style="padding: 10px">
+    <fieldset>
+
+        <!-- Form Name -->
+        <legend>节点配置
+            {% if deploy %}
+                <span class="tips">(部署已配置)</span>
+            {% endif %}
+        </legend>
+
+        <!-- Select Basic -->
+        <div class="form-group">
+            <label class="col-md-4 control-label" for="control">控制节点</label>
+
+            <div class="col-md-4">
+                <select id="control" name="control" class="form-control input-long">
+                    {% if deploy %}
+                        {% for host in role %}
+                            {% if host.role == 'control' %}
+                                <option value="{{ host.host.id }}">{{ host.host.hostname }}-->{{ host.host.ip }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <option value=""></option>
+                        {% for host in hosts %}
+                            <option value="{{ host.id }}">{{ host.hostname }}-->{{ host.ip }}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-md-4 control-label" for="compute">计算节点</label>
+
+            <div class="col-md-4">
+                <table class="table table-bordered">
+                    <tr>
+                        <th>主机名</th>
+                        <th>IP</th>
+                        <td><input type="checkbox" name="compute" id="compute-all" checked="checked"></td>
+                    </tr>
+                    {% if deploy %}
+                        {% for host in role %}
+                            {% if host.role == 'compute' %}
+                                <tr id="host-{{ host.host.id }}">
+                                    <td>{{ host.host.hostname }}</td>
+                                    <td>{{ host.host.ip }}</td>
+                                    <td><input type="checkbox" class="liChild" name="compute"
+                                               id="compute-{{ host.host.id }}"
+                                               value="{{ host.host.id }}" checked="checked">
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        {% for host in hosts %}
+                            <tr id="host-{{ host.id }}">
+                                <td>{{ host.hostname }}</td>
+                                <td>{{ host.ip }}</td>
+                                <td><input type="checkbox" class="liChild" name="compute"
+                                           id="compute-{{ host.id }}"
+                                           value="{{ host.id }}" checked="checked">
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+
+        {% if deploy and idle %}
+
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="compute">未配置节点</label>
+
+                <div class="col-md-4">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>主机名</th>
+                            <th>IP</th>
+                            <td><input type="checkbox" name="idle" id="compute-idle" checked="checked"></td>
+                        </tr>
+
+                        {% for host in idle %}
+                            <tr id="host-{{ host.id }}">
+                                <td>{{ host.hostname }}</td>
+                                <td>{{ host.ip }}</td>
+                                <td><input type="checkbox" name="idle"
+                                           id="compute-{{ host.id }}"
+                                           data-value="{{ host.id }}" checked="checked">
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <a href="#basic" data-toggle="modal" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i>
+                        添加到计算节点</a>
+
+                </div>
+            </div>
+        {% endif %}
+
+
+    </fieldset>
+
+    <fieldset>
+
+        <legend>网络设置</legend>
+
+        <!-- Multiple Radios -->
+        <div class="form-group">
+            <label class="col-md-4 control-label" for="net-model">网络模型</label>
+
+            <div class="col-md-4">
+                <div class="radio">
+                    <label for="radios-0">
+                        <input type="radio" name="net-model" value="VLAN"
+                                {% if deploy.net_model == 'VLAN' %}
+                               checked="checked"
+                                {% endif %}
+                                >
+                        VLAN
+                    </label>
+                </div>
+                <div class="radio">
+                    <label for="radios-1">
+                        <input type="radio" name="net-model"
+                               value="GRE"
+                                {% if deploy.net_model == 'GRE' %}
+                               checked="checked"
+                                {% endif %}
+                                >
+                        GRE
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-md-4 control-label" for="radios">管理网络</label>
+
+            <div class="col-md-4">
+                {% for interface in interfaces %}
+                <label class="radio-inline" for="manage-net">
+                    <input type="radio" name="net-manage"  value="{{ interface }}"
+                            {% if deploy.net_manage == interface %}
+                           checked="checked"
+                            {% endif %}
+                            >
+                    {{ interface }}
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-md-4 control-label" for="net-compute">计算网络</label>
+
+            <div class="col-md-4">
+                {% for interface in interfaces %}
+                <label class="radio-inline" for="net-compute">
+                    <input type="radio" name="net-compute"  value="{{ interface }}"
+                            {% if deploy.net_compute == interface %}
+                           checked="checked"
+                            {% endif %}
+                            >
+                    {{ interface }}
+                </label>
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+        <div class="form-group">
+            <label class="col-md-4 control-label" for="net-ex">外部网络</label>
+
+            <div class="col-md-4">
+               {% for interface in interfaces %}
+                <label class="radio-inline" for="net-ex">
+                    <input type="radio" name="net-ex"  value="{{ interface }}"
+                    {% if deploy.net_ex == interface %}
+                           checked="checked"
+                    {% endif %}
+                            >
+                    {{ interface }}
+                </label>
+                {% endfor %}
+
+
+            </div>
         </div>
 
 
+    </fieldset>
+
+    <fieldset>
+
+        <legend>存储设置</legend>
+
+        <!-- Multiple Radios -->
+        <div class="form-group">
+            <label class="col-md-4 control-label" for="store-model">存储后端</label>
+
+            <div class="col-md-4">
+                <div class="radio">
+                    <label for="radios-0">
+                        <input type="radio" name="store-model" id="storage-0" value="LVM"
+                               checked="checked">
+                        LVM
+                    </label>
+                </div>
+                <div class="radio">
+                    <label for="radios-1">
+                        <input type="radio" name="store-model" id="storage-1" value="CEPH">
+                        CEPH
+                    </label>
+                </div>
+            </div>
+        </div>
+
+    </fieldset>
+    <div class="modal-footer">
+        <a href="#" name="submit" class="btn btn-sm btn-default"><i class="fa fa-remove"></i>取消</a>
+        <button type="submit" name="submit" class="btn btn-sm btn-primary" id="submit"><i class="fa fa-check"></i>提交
+        </button>
     </div>
+
+    </form>
+
+    <!-- END FORM-->
+
+
+    </div>
+    </div>
+    <!-- END PORTLET-->
+    </div>
+    </div>
+
+
 {% endblock %}
+
+
+    {% block js %}
+        <script>
+            $(document).ready(function () {
+                $('#deploy_form').bootstrapValidator({
+                    message: '输入不合法',
+                    fields: {
+                        "net-model": {
+                            message: '必须选择网络模型',
+                            validators: {
+                                notEmpty: {
+                                    message: '必须选择网络模型'
+                                }
+                            }
+                        },
+                        "net-manage": {
+                            message: '必须选择管理网络',
+                            validators: {
+                                notEmpty: {
+                                    message: '必须选择管理网络'
+                                }
+                            }
+                        },
+                        "net-compute": {
+                            message: '必须选择计算网络',
+                            validators: {
+                                notEmpty: {
+                                    message: '必须选择计算网络'
+                                }
+                            }
+                        },
+                        "net-ex": {
+                            message: '必须选择外部网络',
+                            validators: {
+                                notEmpty: {
+                                    message: '必须选择外部网络'
+                                }
+                            }
+                        },
+                        "store-model": {
+                            message: '必须选择外部网络',
+                            validators: {
+                                notEmpty: {
+                                    message: '必须选择外部网络'
+                                }
+                            }
+                        },
+                        "control": {
+                            message: '必须选择控制节点',
+                            validators: {
+                                notEmpty: {
+                                    message: '必须选择控制节点'
+                                }
+                            }
+                        }
+                    }})
+                        .on('success.form.bv', function (e) {
+                            // Prevent form submission
+                            e.preventDefault();
+                            // Get the form instance
+                            var $form = $(e.target);
+                            // Get the BootstrapValidator instance
+                            var bv = $form.data('bootstrapValidator');
+                            $.ajax({
+                                type: "POST",
+                                url: "/config",
+                                data: $form.serialize(),
+                                success: function (msg) {
+                                    window.location.href = "/deploy";
+                                },
+                                error: function () {
+                                    alert("添加失败");
+                                }
+                            });
+                        });
+
+            });
+
+            $("#control").change(function () {
+                var $hostId = $(this).val();
+                $("tr").each(function () {
+                    $(this).show();
+                });
+                $("#host-" + $hostId).hide();
+                $("#host-" + $hostId + " input").removeAttr("checked");
+            });
+
+            $("#compute-all").change(function () {
+                if ($(this).is(':checked')) {
+                    $("[name='compute']").each(function () {
+                        if ($(this).is(":visible"))
+                            $(this).prop('checked', true);
+                    });
+                } else {
+                    $("[name='compute']").each(function () {
+                        if ($(this).is(":visible"))
+                            $(this).prop('checked', false);
+                    });
+                }
+            });
+
+            $("#compute-idle").change(function () {
+                if ($(this).is(':checked')) {
+                    $("[name='idle']").each(function () {
+                        if ($(this).is(":visible"))
+                            $(this).prop('checked', true);
+                    });
+                } else {
+                    $("[name='idle']").each(function () {
+                        if ($(this).is(":visible"))
+                            $(this).prop('checked', false);
+                    });
+                }
+            });
+
+            $("#idle-submit").click(function(){
+                var $ids = "";
+                 $("[name='idle']").each(function(){
+                     var $d  = $(this).data("value");
+                     if($d) {
+                         if($ids == "")
+                            $ids = $d;
+                         else
+                            $ids += "," + $d;
+                     }
+                 });
+                $.get("/api/host/addrole?ids" + $ids )
+                $.ajax({
+                            type: "get",
+                            url: "/api/host/addrole?role=compute&ids=" + $ids,
+                            success: function (msg) {
+                                $("#basic").modal('hide');
+                                location.reload();
+                            },
+                            error: function () {
+                                $("#basic").modal('hide');
+                                dialog("添加失败");
+                            }
+                        });
+
+            });
+
+            //已经配置以后，不能重新配置
+            {% if deploy %}
+                $("[type='radio']").attr("disabled", "true");
+                $("[name='compute']").attr("disabled", "true");
+                $("select").attr("disabled", "true");
+                $("[name='submit']").hide();
+            {% endif %}
+
+        </script>
+    {% endblock %}

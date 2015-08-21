@@ -1,22 +1,13 @@
 #!/usr/bin/env bash
 
 source ./config.sh
-source ./install_openstack_lib.sh
+source ./utils.sh
 
-function set_main_progress(){
-    curl --connect-timeout 3  "${SERVICE_URL}/progress?progress=$1"  &>/dev/null
-}
-
-function set_host_progress(){
-    curl  --connect-timeout 3  "${SERVICE_URL}/host/progress?progress=$2&ip=$1" &>/dev/null
-}
 
 function install_control(){
     host=$1
     set_host_progress $host 10
-    bash control_init.sh
-    set_host_progress $host 30
-    bash control_install.sh
+    bash install_control.sh
     set_host_progress $host 100
 }
 
@@ -24,13 +15,10 @@ function install_compute(){
     host=$1
     set_host_progress $host 10
     ssh $host mkdir -p $ROOT_DIR/script
-    scp compute_init.sh $host:$ROOT_DIR/script
-    scp compute_install.sh $host:$ROOT_DIR/script
+    scp *.sh $host:$ROOT_DIR/script
     ssh $host chmod +x $ROOT_DIR/script/*.sh
     set_host_progress $host 30
-    bash compute_init.sh
-    set_host_progress $host 50
-    bash compute_install.sh
+    ssh $host "cd $ROOT_DIR/script && sh install_compute.sh"
     set_host_progress $host 100
 }
 

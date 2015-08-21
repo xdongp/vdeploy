@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="mainbox">
+                {% if deploy.progress == 100 %}
+                    <iframe src="http://{{ control }}/ganglia/" style="height:900px; width:100%; border:0px;"></iframe>
+                {% else %}
+                    <p>部署未完成</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

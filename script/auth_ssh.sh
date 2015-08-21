@@ -8,6 +8,6 @@ if [ -z $HOST ] || [ -z $PASS ]; then
     exit 1
 fi
 
-source ./install_openstack_lib.sh
+source ./utils.sh
 keygen
 copy_ssh $HOST $PASS

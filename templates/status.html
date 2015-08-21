@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="clearfix">
+
+        <div class="portlet box blue">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="fa fa-key"></i>认证服务
+                </div>
+            </div>
+            <div class="portlet-body">
+                <table class="table table-bordered">
+                    <tr>
+                        <th>名称</th>
+                        <th>状态</th>
+                        <th>更新时间</th>
+
+                    </tr>
+                    {% for service in keystone %}
+                        <tr>
+                            <td>
+                                {{ service.0 }}
+                            </td>
+                            {% if service.1 %}
+                            <td>
+                                <span class="label label-success"> 启动 </span>
+                            </td>
+                            {% else %}
+                            <td>
+                                <span class="label label-danger"> 未启动 </span>
+                            </td>
+                            {% endif %}
+                            <td>
+                                {{ service.2 }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+
+            </div>
+        </div>
+
+        <div class="portlet box green">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="fa fa-database"></i>镜像服务
+                </div>
+            </div>
+            <div class="portlet-body">
+                <table class="table table-bordered">
+                    <tr>
+                        <th>名称</th>
+                        <th>状态</th>
+                        <th>更新时间</th>
+
+                    </tr>
+                    {% for service in glance %}
+                        <tr>
+                            <td>
+                                {{ service.0 }}
+                            </td>
+                            {% if service.1 %}
+                            <td>
+                                <span class="label label-success"> 启动 </span>
+                            </td>
+                            {% else %}
+                            <td>
+                                <span class="label label-danger"> 未启动 </span>
+                            </td>
+                            {% endif %}
+                            <td>
+                                {{ service.2 }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+
+            </div>
+        </div>
+
+
+        <div class="portlet box purple">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="fa fa-desktop"></i>计算服务
+                </div>
+            </div>
+            <div class="portlet-body">
+                <table class="table table-bordered">
+                    <tr>
+                        <th>名称</th>
+                        <th>主机</th>
+                        <th>状态</th>
+                        <th>更新时间</th>
+
+                    </tr>
+                    {% for service in nova %}
+                        <tr>
+                            <td>
+                                {{ service.0 }}
+                            </td>
+                            <td>
+                                {{ service.1 }}
+                            </td>
+                            {% if service.2 %}
+                            <td>
+                                <span class="label label-success"> 启动 </span>
+                            </td>
+                            {% else %}
+                            <td>
+                                <span class="label label-danger"> 未启动 </span>
+                            </td>
+                            {% endif %}
+                            <td>
+                                {{ service.3 }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+
+            </div>
+        </div>
+
+            <div class="portlet box yellow">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="fa fa-cubes"></i>网络服务
+                </div>
+            </div>
+            <div class="portlet-body">
+                <table class="table table-bordered">
+                    <tr>
+                        <th>名称</th>
+                        <th>状态</th>
+                        <th>更新时间</th>
+
+                    </tr>
+                    {% for service in neutron %}
+                        <tr>
+                            <td>
+                                {{ service.0 }}
+                            </td>
+                            {% if service.1 %}
+                            <td>
+                                <span class="label label-success"> 启动 </span>
+                            </td>
+                            {% else %}
+                            <td>
+                                <span class="label label-danger"> 未启动 </span>
+                            </td>
+                            {% endif %}
+                            <td>
+                                {{ service.2 }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+
+            </div>
+        </div>
+
+
+    </div>
+
+{% endblock %}
