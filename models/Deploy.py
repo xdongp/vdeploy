@@ -12,10 +12,17 @@ class Host(db.Model):
     cpu_model = db.Column(db.VARCHAR(64))
     cpu_num = db.Column(db.Integer)
     mem = db.Column(db.Integer)   #单位MB
-    disk = db.Column(db.Integer)   #单位MB
+    disk = db.Column(db.Integer)   #单位GB
     interface = db.Column(db.VARCHAR(256)) #json格式
     status = db.Column(db.Boolean, default=False)
     progress = db.Column(db.Integer, default=0)
+
+
+    def __init__(self, hostname, ip, user, passwd):
+        self.hostname = hostname
+        self.ip  = ip
+        self.passwd = passwd
+        self.user = user
 
     @classmethod
     def update_progress(cls, ip, num):
