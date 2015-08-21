@@ -399,5 +399,14 @@ start_service memcached
 chkconfig_service httpd
 chkconfig_service memcached
 
+#安装ganglia
+yum -y install php-cli php-gb php
+yum -y install rrdtool  ganglia-web ganglia-gmetad ganglia-gmond ganglia-gmond-python
+chkconfig_service gmond
+chkconfig_service gmetad
+start_service gmond
+start_service gmetad
+restart_service httpd
+
 echo "^^, 控制节点安装完成"
 exit 0

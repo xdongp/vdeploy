@@ -194,6 +194,11 @@ restart_service neutron-openvswitch-agent
 #execute_cmd "mount -t xfs /dev/sdb1 /var/lib/nova/instances"
 #execute_cmd "chown -R nova:nova /var/lib/nova/instances/"
 
+#安装ganglia
+yum -y install  ganglia-gmond
+chkconfig_service gmond
+start_service gmond
+
 echo "^^, 计算节点安装完成"
 set_host_progress $MYIP 100
 
